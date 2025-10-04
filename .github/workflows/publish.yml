@@ -35,20 +35,24 @@ jobs:
         run: pnpm build
 
       - name: Verify package metadata
-        shell: bash
         run: |
-          echo "Debug: printing package.json version and repository.url"
-          node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));console.log('version=',pkg.version,'repository.url=',pkg.repository?.url)"
-          EXPECTED_URL="https://github.com/${{ github.repository }}"
-          PKG_URL_RAW=$(node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));console.log(pkg.repository?.url||'')")
-          # 规范化：去除换行、去除可选前缀/后缀及尾部斜杠
-          PKG_URL=$(echo "$PKG_URL_RAW" | tr -d '\n' | sed -E 's#^git\+##; s#\.git$##; s#/*$##')
-          EXPECTED_URL_NORM=$(echo "$EXPECTED_URL" | sed -E 's#/*$##')
-          echo "Normalized: PKG_URL='$PKG_URL' EXPECTED='$EXPECTED_URL_NORM'"
-          if [ "$PKG_URL" != "$EXPECTED_URL_NORM" ]; then
-            echo "::error::package.json repository.url ('$PKG_URL') 与预期 ('$EXPECTED_URL') 不一致。请更新 package.json 或使用包含修复的提交打标签发布。";
-            exit 1;
-          fi
+          node -e "
+          const fs=require('fs');
+          const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
+          const expected=`https://github.com/${process.env.GITHUB_REPOSITORY}`;
+          const normalize=(s)=>String(s||'')
+            .replace(/^git\+/,'')
+            .replace(/\.git$/,'')
+            .replace(/\/*$/,'');
+          const pkgUrl=normalize(pkg.repository?.url).toLowerCase();
+          const expUrl=normalize(expected).toLowerCase();
+          console.log('Debug: version=',pkg.version,'repository.url=',pkg.repository?.url);
+          console.log('Normalized: PKG_URL=\''+pkgUrl+'\' EXPECTED=\''+expUrl+'\'');
+          if(pkgUrl!==expUrl){
+            console.error(`::error::package.json repository.url ('${pkgUrl}') 与预期 ('${expUrl}') 不一致。请更新 package.json 或使用包含修复的提交打标签发布。`);
+            process.exit(1);
+          }
+          "
 
       - name: Publish
         run: npm publish --access public --provenance
