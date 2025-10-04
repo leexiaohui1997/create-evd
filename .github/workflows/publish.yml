@@ -34,6 +34,18 @@ jobs:
       - name: Build package
         run: pnpm build
 
+      - name: Verify package metadata
+        shell: bash
+        run: |
+          echo "Debug: printing package.json version and repository.url"
+          node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));console.log('version=',pkg.version,'repository.url=',pkg.repository?.url)"
+          EXPECTED_URL="https://github.com/${{ github.repository }}"
+          PKG_URL=$(node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));console.log(pkg.repository?.url||'')")
+          if [ "$PKG_URL" != "$EXPECTED_URL" ]; then
+            echo "::error::package.json repository.url ('$PKG_URL') 与预期 ('$EXPECTED_URL') 不一致。请更新 package.json 或使用包含修复的提交打标签发布。";
+            exit 1;
+          fi
+
       - name: Publish
         run: npm publish --access public --provenance
         env:
