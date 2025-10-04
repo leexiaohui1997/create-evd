@@ -34,27 +34,32 @@ jobs:
       - name: Build package
         run: pnpm build
 
-      - name: Verify package metadata
+      - name: Sanitize package repository.url
         run: |
           node -e "
           const fs=require('fs');
-          const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
+          const pkgPath='package.json';
+          const pkg=JSON.parse(fs.readFileSync(pkgPath,'utf8'));
           const expected=`https://github.com/${process.env.GITHUB_REPOSITORY}`;
           const normalize=(s)=>String(s||'')
             .replace(/^git\+/,'')
             .replace(/\.git$/,'')
-            .replace(/\/*$/,'');
-          const pkgUrl=normalize(pkg.repository?.url).toLowerCase();
-          const expUrl=normalize(expected).toLowerCase();
-          console.log('Debug: version=',pkg.version,'repository.url=',pkg.repository?.url);
-          console.log('Normalized: PKG_URL=\''+pkgUrl+'\' EXPECTED=\''+expUrl+'\'');
-          if(pkgUrl!==expUrl){
-            console.error(`::error::package.json repository.url ('${pkgUrl}') 与预期 ('${expUrl}') 不一致。请更新 package.json 或使用包含修复的提交打标签发布。`);
-            process.exit(1);
+            .replace(/\/*$/,'')
+            .toLowerCase();
+          const current=normalize(pkg.repository?.url);
+          const target=normalize(expected);
+          if(current!==target){
+            pkg.repository={ type:'git', url: target };
+            fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2)+'\n');
+            console.log('Fixed package.json repository.url to', target);
+          } else {
+            console.log('package.json repository.url already normalized:', current);
           }
           "
 
       - name: Publish
-        run: npm publish --access public --provenance
+        run: |
+          npm config set provenance true
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
