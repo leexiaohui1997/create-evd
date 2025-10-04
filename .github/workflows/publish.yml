@@ -36,7 +36,7 @@ jobs:
 
       - name: Sanitize package repository.url
         run: |
-          node -e "
+          node <<'NODE'
           const fs=require('fs');
           const pkgPath='package.json';
           const pkg=JSON.parse(fs.readFileSync(pkgPath,'utf8'));
@@ -48,14 +48,14 @@ jobs:
             .toLowerCase();
           const current=normalize(pkg.repository?.url);
           const target=normalize(expected);
-          if(current!==target){
+          if(!pkg.repository || pkg.repository.type!=='git' || current!==target){
             pkg.repository={ type:'git', url: target };
             fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2)+'\n');
             console.log('Fixed package.json repository.url to', target);
           } else {
             console.log('package.json repository.url already normalized:', current);
           }
-          "
+          NODE
 
       - name: Publish
         run: |
