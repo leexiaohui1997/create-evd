@@ -1,6 +1,6 @@
 {
   "name": "create-evd",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": false,
   "description": "Egg+Vue+Docker scaffold initializer (npm create evd)",
   "type": "module",
