@@ -1,0 +1,15 @@
+/* 全局样式与变量 */
+$bg: #ffffff;
+$text: #0f172a;
+
+html, body, #app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background: $bg;
+  color: $text;
+}

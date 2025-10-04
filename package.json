@@ -1,0 +1,44 @@
+{
+  "name": "create-evd",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Egg+Vue+Docker scaffold initializer (npm create evd)",
+  "type": "module",
+  "bin": {
+    "create-evd": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "template"
+  ],
+  "keywords": [
+    "scaffold",
+    "egg",
+    "vue",
+    "docker",
+    "create",
+    "cli"
+  ],
+  "author": "EVD Maintainers",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "fs-extra": "^11.2.0",
+    "kolorist": "^1.8.0",
+    "prompts": "^2.4.2",
+    "validate-npm-package-name": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/node": "^20.11.30"
+  }
+}

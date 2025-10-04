@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "Node",
+    "outDir": "dist",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "types": ["node"],
+    "lib": ["ES2020"],
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  }
+  ,
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules", "test-*", "**/test-*/*"]
+}
