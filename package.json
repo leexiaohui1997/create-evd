@@ -28,7 +28,11 @@
     "create",
     "cli"
   ],
-  "author": "EVD Maintainers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lexeiaohui1997/create-evd"
+  },
+  "author": "橙续缘<1287338537@qq.com>",
   "license": "MIT",
   "dependencies": {
     "commander": "^11.0.0",
